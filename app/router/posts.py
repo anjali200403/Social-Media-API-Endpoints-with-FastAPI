@@ -4,7 +4,7 @@ from .. import models,oauth
 from ..database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from ..schemas import Post,PostOut
+from ..schemas import Post,PostOut,PostIn
 
 router=APIRouter( tags=['Posts'])
 
