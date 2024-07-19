@@ -16,6 +16,12 @@ class Post(BaseModel):
     rating: Optional[int] =None
     owner: UserOut
 
+class PostIn(BaseModel):
+    title: str
+    content: str
+    published: bool =True
+    rating: Optional[int] =None
+
 class PostOut(BaseModel):
     Post:Post
     votes:int
