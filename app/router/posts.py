@@ -26,7 +26,7 @@ def get_post_by_id(id: int,db: Session=Depends(get_db),getCurrentUser:int=Depend
     return req_post
 
 
-@router.post("/posts")
+@router.post("/posts",status_code=status.HTTP_201_CREATED)
 def create_post(post: PostIn,db: Session=Depends(get_db),getCurrentUser:int=Depends(oauth.get_current_user)):
     new_post_data = post.model_dump()  
     new_post_data["user_id"] = getCurrentUser.id  
@@ -49,14 +49,14 @@ def delete_post(id:int,db: Session=Depends(get_db),getCurrentUser:int=Depends(oa
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.put("/posts/{id}")
-def update_post(id:int,post:Post,db: Session=Depends(get_db),getCurrentUser:int=Depends(oauth.get_current_user)):
+@router.put("/posts/{id}",status_code=status.HTTP_202_ACCEPTED,response_model=Post)
+def update_post(id:int,post:PostIn,db: Session=Depends(get_db),getCurrentUser:int=Depends(oauth.get_current_user)):
     query_post=db.query(models.Post).filter(models.Post.id==id)
-    post=query_post.first()
+    post_result=query_post.first()
     if not query_post.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"posts with id={id} not found")
-    if post.user_id!=getCurrentUser.id:
+    if post_result.user_id!=getCurrentUser.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Not authorized to perform the given action")
     query_post.update(post.model_dump(),synchronize_session=False)
     db.commit()
-    return {"Updated Post ":query_post.first()}
+    return query_post.first()
