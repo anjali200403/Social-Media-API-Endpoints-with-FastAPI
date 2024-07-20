@@ -25,10 +25,11 @@ def get_post_by_id(id: int,db: Session=Depends(get_db),getCurrentUser:int=Depend
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"posts with id={id} not found")
     return req_post
 
-
-@router.post("/posts")
-def create_post(post: Post,status_code=status.HTTP_201_CREATED,db: Session=Depends(get_db),getCurrentUser:int=Depends(oauth.get_current_user)):
-    new_post=models.Post(user_id=getCurrentUser.id,**post.model_dump())
+@router.post("/posts",status_code=status.HTTP_201_CREATED)
+def create_post(post: PostIn,db: Session=Depends(get_db),getCurrentUser:int=Depends(oauth.get_current_user)):
+    new_post_data = post.model_dump()  
+    new_post_data["user_id"] = getCurrentUser.id  
+    new_post = models.Post(**new_post_data)
     db.add(new_post)
     db.commit()
     db.refresh(new_post)

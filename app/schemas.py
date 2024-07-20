@@ -9,13 +9,6 @@ class UserOut(BaseModel):
     class Config:
         orm_mode=True
         
-class PostIn(BaseModel):
-    title: str
-    content: str
-    published: bool =True
-    rating: Optional[int] =None
-
-
 class Post(BaseModel):
     id:int
     title: str
